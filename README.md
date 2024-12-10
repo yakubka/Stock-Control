@@ -31,32 +31,7 @@ Technologies Used
     Database Connectivity: JDBC (Java Database Connectivity)
     Version Control: Git & GitHub
 
-Project Structure
 
-product-manager/
-│
-├── project-manager/
-│   └── src/
-│        ├──claer/
-|        ├──test/
-|        └──main/
-|             ├──resources/
-|             └──java/
-|                  └──project/
-|                         └──manager/
-|                                    ├── Main.java
-│                                    ├── ManagerGUI.java
-│                                    ├── ManagerLogic.java
-│                                    ├── DatabaseManager.java
-│                                    └── Product.java
-│
-├── target/
-│   └── Maven Build
-│
-├──pom.xml
-│
-├── README.md
-└── .gitignore
 
     Main.java: Entry point of the application. Initializes core components and launches the GUI.
     ManagerGUI.java: Handles the graphical user interface, displaying products and managing user interactions.
