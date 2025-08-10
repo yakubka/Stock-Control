@@ -8,6 +8,7 @@ import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -56,7 +57,7 @@ public class ManagerGUI {
         this.logic = logic;
         this.dbManager = data;
 
-        frame = new JFrame("Product Manager");
+        frame = new JFrame("Stock Control");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(900, 600);
         frame.setLayout(new BorderLayout());
@@ -71,36 +72,58 @@ public class ManagerGUI {
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         frame.add(buttonPanel, BorderLayout.NORTH);
 
-        JButton addProductButton = new JButton("Add New Product");
-        addProductButton.setBackground(new Color(51, 102, 255)); // Brighter Blue
-        addProductButton.setForeground(Color.WHITE);
-        addProductButton.addActionListener(e -> addNewRow());
-        buttonPanel.add(addProductButton);
+        JButton Out_of_StockButton = new JButton("Out of Stock");
+        Out_of_StockButton .setBackground(new Color(51, 102, 255)); // Brighter Blue
+        Out_of_StockButton .setForeground(Color.WHITE);
+        //addProductButton.addActionListener(e -> addNewRow()); пока что не будет добовлять продукты надо что бы он перекидовал на новую страницу 
+        buttonPanel.add(Out_of_StockButton );
 
-        JButton addCategoryButton = new JButton("Add New Category");
-        addCategoryButton.setBackground(new Color(51, 102, 255)); // Brighter Blue
-        addCategoryButton.setForeground(Color.WHITE);
-        addCategoryButton.addActionListener(e -> addNewCategory());
-        buttonPanel.add(addCategoryButton);
+        JButton PopularButton = new JButton("Popular");
+        PopularButton.setBackground(new Color(51, 102, 255)); // Brighter Blue
+        PopularButton.setForeground(Color.WHITE);
+        //addCategoryButton.addActionListener(e -> addNewCategory());надо будет также сделать чтобы перекидывал на ту же самую страницу только при перекидываение что то делалось прериотетом 
+        buttonPanel.add(PopularButton);
 
-        JButton deleteCategoryButton = new JButton("Delete Category");
+       /* JButton deleteCategoryButton = new JButton("Delete Category");
         deleteCategoryButton.setBackground(new Color(204, 51, 51)); // Softer Red
-        deleteCategoryButton.setForeground(Color.WHITE);
+        deleteCategoryButton.setForeground(Color.WHITE);        Пока что не нужно
         deleteCategoryButton.addActionListener(e -> deleteCategory());
         buttonPanel.add(deleteCategoryButton);
-
-        JButton searchCategoryButton = new JButton("Search by Category");
+        */
+/* 
+        JButton searchCategoryButton = new JButton("Search");
         searchCategoryButton.setBackground(new Color(51, 102, 255)); // Brighter Blue
         searchCategoryButton.setForeground(Color.WHITE);
         searchCategoryButton.addActionListener(e -> filterByCategory());
         buttonPanel.add(searchCategoryButton);
+*/
+        JButton searchButton = new JButton();
+        searchButton.setIcon(new ImageIcon("search.png"));
+        searchButton.setBorderPainted(true); 
+        searchButton.setContentAreaFilled(false); // прозрачный фон
+        searchButton.setFocusPainted(true); // без фокуса при клике
+        searchButton.setBackground(new Color(51, 102, 255)); // Brighter Blue
+        searchButton.setForeground(Color.WHITE);
+        buttonPanel.add(searchButton);
+
+       /* JTextField searchField = new JTextField(20); // поле поиска (20 символов ширина)
+
+        searchField.addActionListener(e -> {
+        String query = searchField.getText().trim();
+        System.out.println("Поиск: " + query);
+   
+});
+        JLabel searchIcon = new JLabel("🔍");
+        JPanel searchPanel = new JPanel(new BorderLayout());
+        buttonPanel.add(searchIcon, BorderLayout.EAST);
+        buttonPanel.add(searchField, BorderLayout.CENTER);
 
         JButton showAllButton = new JButton("Show All Products");
         showAllButton.setBackground(new Color(51, 102, 255)); // Brighter Blue
         showAllButton.setForeground(Color.WHITE);
         showAllButton.addActionListener(e -> showAllProducts());
         buttonPanel.add(showAllButton);
-
+*/
         JButton saveChangesButton = new JButton("Save Changes");
         saveChangesButton.setBackground(new Color(102, 204, 102)); // Softer Green
         saveChangesButton.setForeground(Color.WHITE);
