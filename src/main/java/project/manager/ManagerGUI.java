@@ -1,25 +1,46 @@
 package project.manager;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.FlowLayout;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.RenderingHints;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.*;
-import javax.swing.event.*;
 
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.Timer;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 public class ManagerGUI {
 
     private JFrame frame;
     private JPanel inputPanel;
-    private JPanel buttonPanel;
+    private JPanel buttonPanel; // поле панели кнопок, чтобы было видно во всём классе
 
+    // === CardLayout «роутер» и страницы ===
     private CardLayout cardLayout;
-    private JPanel root;
-    private JPanel pageMain;
-    private JPanel pageOut;
-    private JPanel pagePopulat;
-
+    private JPanel root;         // корневой контейнер со страницами
+    private JPanel pageMain;     // главная страница с таблицей/формой
+    private JPanel pageOut;      // страница Out of Stock
+    private JPanel pagePopular;  // страница Popular
 
     private ManagerLogic logic;
     public JScrollPane scroll;
@@ -55,86 +76,92 @@ public class ManagerGUI {
 
         frame = new JFrame("Stock Control");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    
         frame.setSize(900, 600);
-        frame.setLayout(new BorderLayout());
-
         inputPanel = new JPanel();
 
-        inputPanel.setLayout(new GridLayout(0, 7));
-       
-        scroll = new JScrollPane(inputPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-      
-        frame.add(scroll, BorderLayout.CENTER);
-        pageMain.add(buttonPanel,BorderLayout.NORTH);
-
-
+        // ====== CardLayout и страницы ======
         cardLayout = new CardLayout();
         root = new JPanel(cardLayout);
+
+        // --- страница MAIN (твоя текущая разметка) ---
         pageMain = new JPanel(new BorderLayout());
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        frame.add(buttonPanel, BorderLayout.NORTH);
+        // верхняя панель кнопок (с анимацией)
+        buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
-        JButton Out_of_StockButton = new JButton("Out of Stock");
-        Out_of_StockButton .setBackground(new Color(51, 102, 255)); // Brighter Blue
-        Out_of_StockButton .setForeground(Color.WHITE);
-        Out_of_StockButton.addActionListener(e -> cardLayout.show(root,"Out"));
-        buttonPanel.add(Out_of_StockButton );
+        AnimatedButton Out_of_StockButton = new AnimatedButton("Out of Stock");
+        Out_of_StockButton.addActionListener(e -> {
+            // переход на страницу «Out of Stock»
+            // TODO: подгрузить/обновить данные для этой страницы при необходимости
+            cardLayout.show(root, "out");
+        });
+        buttonPanel.add(Out_of_StockButton);
 
-        JButton PopularButton = new JButton("Popular");
-        PopularButton.setBackground(new Color(51, 102, 255)); // Brighter Blue
-        PopularButton.setForeground(Color.WHITE);
-        PopularButton.addActionListener(e -> cardLayout.show(root,"Popular"));//надо добавить фильтры cюда и out stock         
+        AnimatedButton PopularButton = new AnimatedButton("Popular");
+        PopularButton.addActionListener(e -> {
+            // переход на страницу «Popular»
+            // TODO: добавить фильтры/сортировку под популярные позиции
+            cardLayout.show(root, "popular");
+        });
         buttonPanel.add(PopularButton);
 
-       /* JButton deleteCategoryButton = new JButton("Delete Category");
-        deleteCategoryButton.setBackground(new Color(204, 51, 51)); // Softer Red
-        deleteCategoryButton.setForeground(Color.WHITE);        Пока что не нужно
-        deleteCategoryButton.addActionListener(e -> deleteCategory());
-        buttonPanel.add(deleteCategoryButton);
-        */
-/* 
-        JButton searchCategoryButton = new JButton("Search");
-        searchCategoryButton.setBackground(new Color(51, 102, 255)); // Brighter Blue
-        searchCategoryButton.setForeground(Color.WHITE);
-        searchCategoryButton.addActionListener(e -> filterByCategory());
-        buttonPanel.add(searchCategoryButton);
-*/
-            JButton searchButton = new JButton();                               
-            searchButton.setIcon(new ImageIcon("search.png")); // написать путь к фотке 
-            searchButton.setBorderPainted(true); 
-            searchButton.setContentAreaFilled(true); // прозрачный фон
-            searchButton.setFocusPainted(true); // без фокуса при клике
-            searchButton.setBackground(new Color(51, 102, 255)); // Brighter Blue
-            searchButton.setForeground(Color.WHITE);
-            buttonPanel.add(searchButton);
+        // Кнопка поиска с иконкой (иконку подставь по своему пути или из ресурсов)
+        JButton searchButton = new JButton();
+        searchButton.setIcon(new ImageIcon("search.png")); // при желании заменить на ресурс getResource("/icons/search.png")
+        searchButton.setBorderPainted(true);
+        searchButton.setContentAreaFilled(true);
+        searchButton.setFocusPainted(true);
+        searchButton.setBackground(new Color(51, 102, 255));
+        searchButton.setForeground(Color.WHITE);
+        // При клике можно переходить на страницу результатов или открывать поиск
+        searchButton.addActionListener(e -> {
+            // TODO: здесь логика поиска/перехода
+            cardLayout.show(root, "popular"); // пример
+        });
+        buttonPanel.add(searchButton);
 
-       /* JTextField searchField = new JTextField(20); // поле поиска (20 символов ширина)
+        // центральная часть — скролл с inputPanel (таблица/строки)
+        inputPanel = new JPanel();
+        inputPanel.setLayout(new GridLayout(0, 7));
+        scroll = new JScrollPane(
+            inputPanel,
+            JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+            JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
+        );
 
-        searchField.addActio    nListener(e -> { src/main/java/project/manager
-        String query = searchField.getText().trim();
-        System.out.println("Поиск: " + query);
-   
-});
-        JLabel searchIcon = new JLabel("🔍");
-        JPanel searchPanel = new JPanel(new BorderLayout());
-        buttonPanel.add(searchIcon, BorderLayout.EAST);
-        buttonPanel.add(searchField, BorderLayout.CENTER);
+        pageMain.add(buttonPanel, BorderLayout.NORTH);
+        pageMain.add(scroll, BorderLayout.CENTER);
 
-        JButton showAllButton = new JButton("Show All Products");
-        showAllButton.setBackground(new Color(51, 102, 255)); // Brighter Blue
-        showAllButton.setForeground(Color.WHITE);
-        showAllButton.addActionListener(e -> showAllProducts());
-        buttonPanel.add(showAllButton);
-*/
-        JButton saveChangesButton = new JButton("Save Changes");
-        saveChangesButton.setBackground(new Color(102, 204, 102)); // Softer Green
-        saveChangesButton.setForeground(Color.WHITE);
-        saveChangesButton.addActionListener(e -> saveAllChanges());
-        buttonPanel.add(saveChangesButton);
+        // --- страница OUT OF STOCK ---
+        pageOut = new JPanel(new BorderLayout());
+        pageOut.add(new JLabel("Out of Stock page", SwingConstants.CENTER), BorderLayout.CENTER);
+        AnimatedButton backFromOut = new AnimatedButton("Back");
+        backFromOut.addActionListener(e -> cardLayout.show(root, "main"));
+        JPanel outBottom = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        outBottom.add(backFromOut);
+        pageOut.add(outBottom, BorderLayout.SOUTH);
 
+        // --- страница POPULAR ---
+        pagePopular = new JPanel(new BorderLayout());
+        pagePopular.add(new JLabel("Popular page", SwingConstants.CENTER), BorderLayout.CENTER);
+        AnimatedButton backFromPopular = new AnimatedButton("Back");
+        backFromPopular.addActionListener(e -> cardLayout.show(root, "main"));
+        JPanel popularBottom = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        popularBottom.add(backFromPopular);
+        pagePopular.add(popularBottom, BorderLayout.SOUTH);
+
+        // Регистрируем страницы в CardLayout
+        root.add(pageMain, "main");
+        root.add(pageOut, "out");
+        root.add(pagePopular, "popular");
+
+        // ставим «роутер» в окно и показываем MAIN
+        frame.setContentPane(root);
+        cardLayout.show(root, "main");
+
+        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-
     }
 
     public void show() {
@@ -152,9 +179,7 @@ public class ManagerGUI {
     }
 
     private void addNewRow() {
-
         // Getting categories from DB
-
         List<String> categoriesFromDB = dbManager.getAllCategories();
         if (categoriesFromDB.isEmpty()) {
             categoriesFromDB.add("Milk");
@@ -186,10 +211,9 @@ public class ManagerGUI {
         });
 
         JButton deleteButton = new JButton("Delete");
-        deleteButton.setBackground(new Color(204, 51, 51)); 
+        deleteButton.setBackground(new Color(204, 51, 51));
         deleteButton.setForeground(Color.WHITE);
-        //ImageIcon trashIcon = new ImageIcon("project-manager/src/main/java/project/manager/trash.png");
-        //deleteButton.setIcon(trashIcon);
+        // deleteButton.setIcon(new ImageIcon("project-manager/src/main/java/project/manager/trash.png"));
         deleteButton.setEnabled(false);
 
         inputPanel.add(productName);
@@ -228,8 +252,8 @@ public class ManagerGUI {
         String categoryToFilter = JOptionPane.showInputDialog(frame, "Enter category to filter:", "Filter by Category", JOptionPane.PLAIN_MESSAGE);
 
         if (categoryToFilter != null && !categoryToFilter.trim().isEmpty()) {
-            
             for (int i = 7; i < inputPanel.getComponentCount(); i += 7) {
+                @SuppressWarnings("unchecked")
                 JComboBox<String> categoryBox = (JComboBox<String>) inputPanel.getComponent(i + 5);
                 String currentCategory = (String) categoryBox.getSelectedItem();
                 boolean visible = currentCategory.equalsIgnoreCase(categoryToFilter.trim());
@@ -272,10 +296,10 @@ public class ManagerGUI {
             category.setSelectedItem(p.getCategory());
 
             JButton deleteButton = new JButton("Delete");
-            deleteButton.setBackground(new Color(204, 51, 51)); 
+            deleteButton.setBackground(new Color(204, 51, 51));
             deleteButton.setForeground(Color.WHITE);
             deleteButton.addActionListener(e -> {
-                
+
                 dbManager.deleteProduct(p.getId());
 
                 displayProducts(dbManager.getProducts());
@@ -331,7 +355,6 @@ public class ManagerGUI {
                 String cat = rd.category.getSelectedItem().toString();
 
                 if (rd.id < 0) {
-
                     dbManager.saveProduct(name, qty, prc, supp, cat);
                 } else {
                     dbManager.updateProduct(rd.id, name, qty, prc, supp, cat);
@@ -348,23 +371,88 @@ public class ManagerGUI {
     }
 
     // Simple Document Listener for totalPrice
-
     abstract class SimpleDocumentListener implements DocumentListener {
         public abstract void update(DocumentEvent e);
 
         @Override
-        public void insertUpdate(DocumentEvent e) {
-            update(e);
+        public void insertUpdate(DocumentEvent e) { update(e); }
+        @Override
+        public void removeUpdate(DocumentEvent e) { update(e); }
+        @Override
+        public void changedUpdate(DocumentEvent e) { update(e); }
+    }
+
+    // ===== Анимированная кнопка (hover: плавный цвет и скругление) =====
+    static class AnimatedButton extends JButton {
+        private final Timer timer;
+        private float t = 0f;      // текущее значение анимации 0..1
+        private float target = 0f; // целевое значение (0 — обычная, 1 — hover)
+
+        private final Color base = new Color(51, 102, 255);
+        private final Color hover = new Color(70, 140, 255);
+
+        AnimatedButton(String text) {
+            super(text);
+            setOpaque(false);
+            setFocusPainted(false);
+            setBorderPainted(false);
+            setForeground(Color.WHITE);
+            setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.HAND_CURSOR));
+            setMargin(new Insets(10, 16, 10, 16));
+
+            timer = new Timer(16, e -> step());
+            timer.setCoalesce(true);
+
+            // наведение мыши — старт/остановка анимации
+            addMouseListener(new MouseAdapter() {
+                @Override public void mouseEntered(MouseEvent e) { target = 1f; timer.start(); }
+                @Override public void mouseExited (MouseEvent e) { target = 0f; timer.start(); }
+                @Override public void mousePressed(MouseEvent e)  { target = 1f; }
+                @Override public void mouseReleased(MouseEvent e) { target = getBounds().contains(e.getPoint()) ? 1f : 0f; }
+            });
+        }
+
+        private void step() {
+            // плавный переход t -> target
+            float speed = 0.15f;
+            t += (target - t) * speed;
+            if (Math.abs(target - t) < 0.01f) {
+                t = target;
+                timer.stop();
+            }
+            repaint();
         }
 
         @Override
-        public void removeUpdate(DocumentEvent e) {
-            update(e);
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            // интерполяция цвета и радиуса углов
+            Color bg = mix(base, hover, t);
+            int arc = (int) (12 + 8 * t);
+
+           
+            g2.setColor(bg);
+            g2.fillRoundRect(0, 0, getWidth(), getHeight(), arc, arc);
+          
+            super.paintComponent(g2);
+            g2.dispose();
         }
 
         @Override
-        public void changedUpdate(DocumentEvent e) {
-            update(e);
+        public void updateUI() {
+            super.updateUI();
+            
+            setContentAreaFilled(false);
+        }
+
+        private static Color mix(Color a, Color b, float t) {
+            t = Math.max(0f, Math.min(1f, t));
+            int r = (int) (a.getRed()   + (b.getRed()   - a.getRed())   * t);
+            int g = (int) (a.getGreen() + (b.getGreen() - a.getGreen()) * t);
+            int bl= (int) (a.getBlue()  + (b.getBlue()  - a.getBlue())  * t);
+            return new Color(r, g, bl);
         }
     }
 }
