@@ -1,30 +1,26 @@
 package project.manager;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
+import java.awt.*;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.*;
+import javax.swing.event.*;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 public class ManagerGUI {
 
     private JFrame frame;
     private JPanel inputPanel;
+    private JPanel buttonPanel;
+
+    private CardLayout cardLayout;
+    private JPanel root;
+    private JPanel pageMain;
+    private JPanel pageOut;
+    private JPanel pagePopulat;
+
+
     private ManagerLogic logic;
     public JScrollPane scroll;
     private DatabaseManager dbManager;
@@ -65,9 +61,16 @@ public class ManagerGUI {
         inputPanel = new JPanel();
 
         inputPanel.setLayout(new GridLayout(0, 7));
+       
         scroll = new JScrollPane(inputPanel, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-
+      
         frame.add(scroll, BorderLayout.CENTER);
+        pageMain.add(buttonPanel,BorderLayout.NORTH);
+
+
+        cardLayout = new CardLayout();
+        root = new JPanel(cardLayout);
+        pageMain = new JPanel(new BorderLayout());
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         frame.add(buttonPanel, BorderLayout.NORTH);
@@ -75,13 +78,13 @@ public class ManagerGUI {
         JButton Out_of_StockButton = new JButton("Out of Stock");
         Out_of_StockButton .setBackground(new Color(51, 102, 255)); // Brighter Blue
         Out_of_StockButton .setForeground(Color.WHITE);
-        //addProductButton.addActionListener(e -> addNewRow()); пока что не будет добовлять продукты надо что бы он перекидовал на новую страницу 
+        Out_of_StockButton.addActionListener(e -> cardLayout.show(root,"Out"));
         buttonPanel.add(Out_of_StockButton );
 
         JButton PopularButton = new JButton("Popular");
         PopularButton.setBackground(new Color(51, 102, 255)); // Brighter Blue
         PopularButton.setForeground(Color.WHITE);
-        //addCategoryButton.addActionListener(e -> addNewCategory());надо будет также сделать чтобы перекидывал на ту же самую страницу только при перекидываение что то делалось прериотетом 
+        PopularButton.addActionListener(e -> cardLayout.show(root,"Popular"));//надо добавить фильтры cюда и out stock         
         buttonPanel.add(PopularButton);
 
        /* JButton deleteCategoryButton = new JButton("Delete Category");
@@ -97,18 +100,18 @@ public class ManagerGUI {
         searchCategoryButton.addActionListener(e -> filterByCategory());
         buttonPanel.add(searchCategoryButton);
 */
-        JButton searchButton = new JButton();
-        searchButton.setIcon(new ImageIcon("search.png"));
-        searchButton.setBorderPainted(true); 
-        searchButton.setContentAreaFilled(false); // прозрачный фон
-        searchButton.setFocusPainted(true); // без фокуса при клике
-        searchButton.setBackground(new Color(51, 102, 255)); // Brighter Blue
-        searchButton.setForeground(Color.WHITE);
-        buttonPanel.add(searchButton);
+            JButton searchButton = new JButton();                               
+            searchButton.setIcon(new ImageIcon("search.png")); // написать путь к фотке 
+            searchButton.setBorderPainted(true); 
+            searchButton.setContentAreaFilled(true); // прозрачный фон
+            searchButton.setFocusPainted(true); // без фокуса при клике
+            searchButton.setBackground(new Color(51, 102, 255)); // Brighter Blue
+            searchButton.setForeground(Color.WHITE);
+            buttonPanel.add(searchButton);
 
        /* JTextField searchField = new JTextField(20); // поле поиска (20 символов ширина)
 
-        searchField.addActionListener(e -> {
+        searchField.addActio    nListener(e -> { src/main/java/project/manager
         String query = searchField.getText().trim();
         System.out.println("Поиск: " + query);
    
@@ -131,6 +134,7 @@ public class ManagerGUI {
         buttonPanel.add(saveChangesButton);
 
         frame.setVisible(true);
+
     }
 
     public void show() {
