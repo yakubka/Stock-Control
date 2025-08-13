@@ -33,14 +33,14 @@ public class ManagerGUI {
 
     private JFrame frame;
     private JPanel inputPanel;
-    private JPanel buttonPanel; // поле панели кнопок, чтобы было видно во всём классе
+    private JPanel buttonPanel; 
 
-    // === CardLayout «роутер» и страницы ===
+
     private CardLayout cardLayout;
-    private JPanel root;         // корневой контейнер со страницами
-    private JPanel pageMain;     // главная страница с таблицей/формой
-    private JPanel pageOut;      // страница Out of Stock
-    private JPanel pagePopular;  // страница Popular
+    private JPanel root;         
+    private JPanel pageMain;     
+    private JPanel pageOut;      
+    private JPanel pagePopular;  
 
     private ManagerLogic logic;
     public JScrollPane scroll;
@@ -80,48 +80,45 @@ public class ManagerGUI {
         frame.setSize(900, 600);
         inputPanel = new JPanel();
 
-        // ====== CardLayout и страницы ======
+        
         cardLayout = new CardLayout();
         root = new JPanel(cardLayout);
 
-        // --- страница MAIN (твоя текущая разметка) ---
+        
         pageMain = new JPanel(new BorderLayout());
 
-        // верхняя панель кнопок (с анимацией)
         buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
         AnimatedButton Out_of_StockButton = new AnimatedButton("Out of Stock");
         Out_of_StockButton.addActionListener(e -> {
-            // переход на страницу «Out of Stock»
-            // TODO: подгрузить/обновить данные для этой страницы при необходимости
+    
             cardLayout.show(root, "out");
         });
         buttonPanel.add(Out_of_StockButton);
 
         AnimatedButton PopularButton = new AnimatedButton("Popular");
         PopularButton.addActionListener(e -> {
-            // переход на страницу «Popular»
-            // TODO: добавить фильтры/сортировку под популярные позиции
+            
+            // добавить фильтры/сортировку под популярные позиции
             cardLayout.show(root, "popular");
         });
         buttonPanel.add(PopularButton);
 
-        // Кнопка поиска с иконкой (иконку подставь по своему пути или из ресурсов)
+        
         JButton searchButton = new JButton();
-        searchButton.setIcon(new ImageIcon("search.png")); // при желании заменить на ресурс getResource("/icons/search.png")
+        searchButton.setIcon(new ImageIcon("search.png")); // надо сделать путь до файла а то не находит 
         searchButton.setBorderPainted(true);
         searchButton.setContentAreaFilled(true);
         searchButton.setFocusPainted(true);
         searchButton.setBackground(new Color(51, 102, 255));
         searchButton.setForeground(Color.WHITE);
-        // При клике можно переходить на страницу результатов или открывать поиск
+       
         searchButton.addActionListener(e -> {
-            // TODO: здесь логика поиска/перехода
-            cardLayout.show(root, "popular"); // пример
+            // добоавить логику поиска/перехода
+            cardLayout.show(root, "popular");
         });
         buttonPanel.add(searchButton);
 
-        // центральная часть — скролл с inputPanel (таблица/строки)
         inputPanel = new JPanel();
         inputPanel.setLayout(new GridLayout(0, 7));
         scroll = new JScrollPane(
@@ -133,7 +130,7 @@ public class ManagerGUI {
         pageMain.add(buttonPanel, BorderLayout.NORTH);
         pageMain.add(scroll, BorderLayout.CENTER);
 
-        // --- страница OUT OF STOCK ---
+      
         pageOut = new JPanel(new BorderLayout());
         pageOut.add(new JLabel("Out of Stock page", SwingConstants.CENTER), BorderLayout.CENTER);
         AnimatedButton backFromOut = new AnimatedButton("Back");
@@ -142,7 +139,7 @@ public class ManagerGUI {
         outBottom.add(backFromOut);
         pageOut.add(outBottom, BorderLayout.SOUTH);
 
-        // --- страница POPULAR ---
+     
         pagePopular = new JPanel(new BorderLayout());
         pagePopular.add(new JLabel("Popular page", SwingConstants.CENTER), BorderLayout.CENTER);
         AnimatedButton backFromPopular = new AnimatedButton("Back");
@@ -151,12 +148,12 @@ public class ManagerGUI {
         popularBottom.add(backFromPopular);
         pagePopular.add(popularBottom, BorderLayout.SOUTH);
 
-        // Регистрируем страницы в CardLayout
+      
         root.add(pageMain, "main");
         root.add(pageOut, "out");
         root.add(pagePopular, "popular");
 
-        // ставим «роутер» в окно и показываем MAIN
+      
         frame.setContentPane(root);
         cardLayout.show(root, "main");
 
@@ -167,7 +164,7 @@ public class ManagerGUI {
     public void show() {
         frame.setVisible(true);
     }
-
+//здесь тоже надо будет поменять 
     private void addColumnHeaders() {
         String[] headers = {"Product Name", "Quantity", "Price", "Total Price", "Supplier", "Category", "Delete"};
         for (String header : headers) {
@@ -196,7 +193,7 @@ public class ManagerGUI {
         JTextField supplier = new JTextField(20);
         JComboBox<String> category = new JComboBox<>(categoryArray);
 
-        // totalPrice changes if quantity or price changed
+    
         quantity.getDocument().addDocumentListener(new SimpleDocumentListener() {
             @Override
             public void update(DocumentEvent e) {
@@ -213,7 +210,7 @@ public class ManagerGUI {
         JButton deleteButton = new JButton("Delete");
         deleteButton.setBackground(new Color(204, 51, 51));
         deleteButton.setForeground(Color.WHITE);
-        // deleteButton.setIcon(new ImageIcon("project-manager/src/main/java/project/manager/trash.png"));
+        // deleteButton.setIcon(new ImageIcon("project-manager/src/main/java/project/manager/trash.png")); тоже вроде не показывает хз
         deleteButton.setEnabled(false);
 
         inputPanel.add(productName);
@@ -370,7 +367,7 @@ public class ManagerGUI {
         JOptionPane.showMessageDialog(frame, "All changes saved successfully!");
     }
 
-    // Simple Document Listener for totalPrice
+  
     abstract class SimpleDocumentListener implements DocumentListener {
         public abstract void update(DocumentEvent e);
 
@@ -382,12 +379,12 @@ public class ManagerGUI {
         public void changedUpdate(DocumentEvent e) { update(e); }
     }
 
-    // ===== Анимированная кнопка (hover: плавный цвет и скругление) =====
+    
     static class AnimatedButton extends JButton {
         private final Timer timer;
-        private float t = 0f;      // текущее значение анимации 0..1
-        private float target = 0f; // целевое значение (0 — обычная, 1 — hover)
-
+        private float t = 0f;    
+        private float target = 1f;
+        
         private final Color base = new Color(51, 102, 255);
         private final Color hover = new Color(70, 140, 255);
 
@@ -403,7 +400,7 @@ public class ManagerGUI {
             timer = new Timer(16, e -> step());
             timer.setCoalesce(true);
 
-            // наведение мыши — старт/остановка анимации
+    
             addMouseListener(new MouseAdapter() {
                 @Override public void mouseEntered(MouseEvent e) { target = 1f; timer.start(); }
                 @Override public void mouseExited (MouseEvent e) { target = 0f; timer.start(); }
@@ -413,7 +410,7 @@ public class ManagerGUI {
         }
 
         private void step() {
-            // плавный переход t -> target
+           
             float speed = 0.15f;
             t += (target - t) * speed;
             if (Math.abs(target - t) < 0.01f) {
@@ -428,7 +425,6 @@ public class ManagerGUI {
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-            // интерполяция цвета и радиуса углов
             Color bg = mix(base, hover, t);
             int arc = (int) (12 + 8 * t);
 
