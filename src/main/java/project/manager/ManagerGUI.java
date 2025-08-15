@@ -39,9 +39,10 @@ public class ManagerGUI {
     private CardLayout cardLayout;
     private JPanel root;         
     private JPanel pageMain;     
-    private JPanel pageOut;      
+   private JPanel pageOut;      
     private JPanel pagePopular;  
 
+    private OutOfStock outPage;
     private ManagerLogic logic;
     public JScrollPane scroll;
     private DatabaseManager dbManager;
@@ -83,6 +84,8 @@ public class ManagerGUI {
         
         cardLayout = new CardLayout();
         root = new JPanel(cardLayout);
+        outPage = new OutOfStock(dbManager, logic, 5);
+        root.add(outPage, "out");
 
         
         pageMain = new JPanel(new BorderLayout());
@@ -91,23 +94,25 @@ public class ManagerGUI {
 
         AnimatedButton Out_of_StockButton = new AnimatedButton("Out of Stock");
         Out_of_StockButton.addActionListener(e -> {
-    
-            cardLayout.show(root, "out");
+
+                    outPage.refresh();                
+                    cardLayout.show(root, "out"); 
+
         });
         buttonPanel.add(Out_of_StockButton);
 
         AnimatedButton PopularButton = new AnimatedButton("Popular");
         PopularButton.addActionListener(e -> {
             
-            // добавить фильтры/сортировку под популярные позиции
+            
             cardLayout.show(root, "popular");
         });
         buttonPanel.add(PopularButton);
 
         
         JButton searchButton = new JButton();
-        searchButton.setIcon(new ImageIcon("search.png")); // надо сделать путь до файла а то не находит 
-        searchButton.setBorderPainted(true);
+        searchButton.setBorderPainted(true);      
+        searchButton.setIcon(new ImageIcon("search.png")); 
         searchButton.setContentAreaFilled(true);
         searchButton.setFocusPainted(true);
         searchButton.setBackground(new Color(51, 102, 255));
@@ -164,7 +169,7 @@ public class ManagerGUI {
     public void show() {
         frame.setVisible(true);
     }
-//здесь тоже надо будет поменять 
+
     private void addColumnHeaders() {
         String[] headers = {"Product Name", "Quantity", "Price", "Total Price", "Supplier", "Category", "Delete"};
         for (String header : headers) {
@@ -176,7 +181,7 @@ public class ManagerGUI {
     }
 
     private void addNewRow() {
-        // Getting categories from DB
+    
         List<String> categoriesFromDB = dbManager.getAllCategories();
         if (categoriesFromDB.isEmpty()) {
             categoriesFromDB.add("Milk");
@@ -210,7 +215,7 @@ public class ManagerGUI {
         JButton deleteButton = new JButton("Delete");
         deleteButton.setBackground(new Color(204, 51, 51));
         deleteButton.setForeground(Color.WHITE);
-        // deleteButton.setIcon(new ImageIcon("project-manager/src/main/java/project/manager/trash.png")); тоже вроде не показывает хз
+        deleteButton.setIcon(new ImageIcon("project-manager/src/main/java/project/manager/trash.png")); 
         deleteButton.setEnabled(false);
 
         inputPanel.add(productName);
