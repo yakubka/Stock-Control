@@ -8,6 +8,7 @@ public class Product {
     private String supplier;
     private String category;
 
+   
     public Product(int id, String productName, int quantity, double price, String supplier, String category) {
         this.id = id;
         this.productName = productName;
@@ -15,6 +16,11 @@ public class Product {
         this.price = price;
         this.supplier = supplier;
         this.category = category;
+    }
+
+    
+    public Product(String productName, int quantity, double price, String supplier, String category) {
+        this(0, productName, quantity, price, supplier, category);
     }
 
     public int getId() {
@@ -39,5 +45,18 @@ public class Product {
 
     public String getCategory() {
         return category;
+    }
+
+    
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", productName='" + productName + '\'' +
+                ", quantity=" + quantity +
+                ", price=" + price +
+                ", supplier='" + supplier + '\'' +
+                ", category='" + category + '\'' +
+                '}';
     }
 }
