@@ -31,7 +31,7 @@ public class DatabaseManager {
             preparedStatement.setString(5, category);
             preparedStatement.executeUpdate();
 
-            
+           
             saveCategory(category);
 
         } catch (SQLException e) {
@@ -70,7 +70,7 @@ public class DatabaseManager {
     }
 
     public void deleteCategory(String category) {
-       
+        // сначала удаляем продукты этой категории
         String deleteProductsQuery = "DELETE FROM products WHERE category=?";
         try (Connection connection = getConnection();
              PreparedStatement ps = connection.prepareStatement(deleteProductsQuery)) {
@@ -80,7 +80,6 @@ public class DatabaseManager {
             e.printStackTrace();
         }
 
-        // Deleting categories from category table 
         
         String deleteCategoryQuery = "DELETE FROM categories WHERE category_name=?";
         try (Connection connection = getConnection();
@@ -144,5 +143,40 @@ public class DatabaseManager {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+   
+    public List<Product> getLowStockProducts(int threshold) {
+        String sql = "SELECT id, product_name, quantity, price, supplier, category " +
+                     "FROM products " +
+                     "WHERE quantity < ? " +
+                     "ORDER BY quantity ASC, product_name ASC";
+        List<Product> result = new ArrayList<>();
+        try (Connection connection = getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+
+            ps.setInt(1, threshold);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Product p = new Product(
+                            rs.getInt("id"),
+                            rs.getString("product_name"),
+                            rs.getInt("quantity"),
+                            rs.getDouble("price"),
+                            rs.getString("supplier"),
+                            rs.getString("category")
+                    );
+                    result.add(p);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return result;
+    }
+
+   
+    public List<Product> getOutOfStockProducts() {
+        return getLowStockProducts(1); // <1 эквивалентно quantity = 0
     }
 }
